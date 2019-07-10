@@ -1,0 +1,33 @@
+color_definitions:
+  green: 38;5;156
+  grey: 00;38;5;240
+  red: 38;5;175
+extension_groups:
+  source_code: [.py, .go, .pl, .h, .c, .cpp, .hpp, .java, .groovy]
+  configs: [.yaml, .json, .xml]
+  unimportant: [.log, .bak, .out, "*~", "*#", .part, .swp, .tmp, .o, .pyc, .class, .cache]
+color_mapping:
+  source_code: green
+  unimportant: grey
+  configs: red
+do_not_process:
+  FILE: 00
+  RESET: 0
+  DIR: 01;38;5;75
+  LINK: 01;38;5;37
+  MULTIHARDLINK: 00
+  FIFO: 48;5;230;38;5;136;01
+  SOCK: 48;5;230;38;5;136;01
+  DOOR: 48;5;230;38;5;136;01
+  BLK: 48;5;230;38;5;244;01
+  CHR: 48;5;230;38;5;244;01
+  ORPHAN: 48;5;235;38;5;160
+  SETUID: 48;5;160;38;5;230
+  SETGID: 48;5;136;38;5;230
+  CAPABILITY: 30;41
+  STICKY_OTHER_WRITABLE: 48;5;64;38;5;230
+  OTHER_WRITABLE: 48;5;235;38;5;33
+  STICKY: 48;5;33;38;5;230
+  EXEC: 01;38;5;78
+  
+  
