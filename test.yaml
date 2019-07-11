@@ -1,15 +1,13 @@
 color_definitions:
-  green: 38;5;156
-  grey: 00;38;5;240
-  red: 38;5;175
+  test: test
 extension_groups:
   source_code: [.py, .go, .pl, .h, .c, .cpp, .hpp, .java, .groovy]
   configs: [.yaml, .json, .xml]
   unimportant: [.log, .bak, .out, "*~", "*#", .part, .swp, .tmp, .o, .pyc, .class, .cache]
 color_mapping:
-  source_code: green
-  unimportant: grey
-  configs: red
+  source_code: PaleGreen1
+  unimportant: Grey35
+  configs: Pink3
 do_not_process:
   FILE: 00
   RESET: 0

@@ -1,20 +1,23 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"os"
+	"strings"
 	"log"
 )
 
 
+const DefaultColorType = "00;38;5;"
+
 type LCConfig struct {
 	groups map[string][]string
 	colors map[string]string
+	extensions map[string]string
 }
 
 func (c *LCConfig) GetConfigContent() (*string, error) {
-	var buffer bytes.Buffer
+	var buffer strings.Builder
 	var err error
 	for group := range c.groups {
 		var groupContent *string
@@ -29,9 +32,9 @@ func (c *LCConfig) GetConfigContent() (*string, error) {
 
 
 func (c *LCConfig) getGroupContent(name string) (*string, error) {
-	var buffer bytes.Buffer
+	var buffer strings.Builder
 	var err error
-	groupHeader := fmt.Sprintf("\nGroup %s \n", name)
+	groupHeader := fmt.Sprintf("\nGroup %s\n", name)
 	buffer.WriteString(groupHeader)
 	for _, extension := range c.groups[name] {
 		var extensionLine string
@@ -45,7 +48,7 @@ func (c *LCConfig) getGroupContent(name string) (*string, error) {
 }
 
 func (c *LCConfig) getExtensionLine(name string) (string, error) {
-	if color, ok := c.colors[name]; ok {
+	if color, ok := c.extensions[name]; ok {
 		return fmt.Sprintf("%s %s\n", name, color), nil
 	}
 	return "", fmt.Errorf("No extension %s", name)
@@ -70,39 +73,49 @@ func (c *LCConfig) WriteConfigFile(path string) error {
 	return nil
 }
 
-func NewLCConfig() *LCConfig {
+func (c *LCConfig) UpdateColors(newColors map[string]string) {
+	for k, v := range newColors {
+		c.colors[k] = v
+	}
+}
+
+func (c *LCConfig) generateColorCode(name string) string {
+	result := name
+	if colorCode, ok := c.colors[name]; ok {
+		result = colorCode
+	}
+	return result
+}
+
+func NewLCConfig(colorDefinitions map[string]string) *LCConfig {
 	config := LCConfig{}
 	config.groups = map[string][]string {}
+	config.extensions = map[string]string {}
 	config.colors = map[string]string {}
+	for k, v := range colorDefinitions {
+		config.colors[k] = DefaultColorType + v
+	}
 	return &config
 }
 
-
-func GenerateLCConfigStruct(orig *ConfigFile) (*LCConfig, error) {
-	config := NewLCConfig()
+func GenerateLCConfigStruct(orig *ConfigFile, definitions map[string]string) (*LCConfig, error) {
+	config := NewLCConfig(definitions)
 	config.groups = orig.ExtensionGroups
+	config.UpdateColors(orig.ColorDefinitions)
 	
 	for groupName, groupExtensions := range orig.ExtensionGroups {
 		var color string
 		if colorName, ok := orig.ColorMapping[groupName]; ok {
-			color = colorName
-			if colorCode, ok := orig.ColorDefinitions[colorName]; ok {
-				color = colorCode
-			}
-			
+			color = config.generateColorCode(colorName)
 		}
 		for _, extension := range groupExtensions {
-			config.colors[extension] = color
+			config.extensions[extension] = color
 		}
-		
 	}
 	groupName := "do_not_process"
 	config.groups[groupName] = []string {}
 	for extensionName, extensionColor := range orig.DoNotProcess {
-		if colorCode, ok := orig.ColorDefinitions[extensionColor]; ok {
-			extensionColor = colorCode
-		}
-		config.colors[extensionName] = extensionColor
+		config.extensions[extensionName] = config.generateColorCode(extensionColor)
 		config.groups[groupName] = append(config.groups[groupName], extensionName)
 	}
 		

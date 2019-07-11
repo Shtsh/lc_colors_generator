@@ -1,21 +1,26 @@
 package main
 
 import (
-	"os"
+	"flag"
 )
 
 func main() {
 	extensions := PopulateExtensions()
+	sourceFlag := flag.String("source", "", "yaml configuration")
+	destinationFlag := flag.String("destination", "","LC_CONFIG file destination")
+	flag.Parse()
+
+	if *sourceFlag == "" || *destinationFlag == "" {
+		panic("Incorrect parameters")
+	}
+	
 	keys := make([]string, 0, len(extensions))
 	for k:= range extensions {
 		keys = append(keys, k)
 	}
-	if len(os.Args) != 3 {
-		panic("Icorrect Parameters")
-	}
-	filePath := os.Args[1]
-	savePath := os.Args[2]
-	config, _ := ReadConfig(filePath)
-	lcconfig, _ := GenerateLCConfigStruct(config)
-	lcconfig.WriteConfigFile(savePath)
+	definitions, _ := loadDefinitions()
+	
+	config, _ := ReadConfig(*sourceFlag)
+	lcconfig, _ := GenerateLCConfigStruct(config, definitions)
+	lcconfig.WriteConfigFile(*destinationFlag)
 }
