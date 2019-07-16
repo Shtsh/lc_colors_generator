@@ -40,7 +40,7 @@ func loadDefinitions() (map[string]string, error) {
 	homeDir := os.Getenv("HOME")
 	filePath := filepath.Join(homeDir, defaultDefinitionsPath)
 	definitions := []ColorDefinition {}
-	result := map[string]string {}
+	result := make(map[string]string, 256)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		if err = downloadDefinitions(filePath); err != nil {
 			log.Println("Cannot download ", defaultDefinitionsPath)

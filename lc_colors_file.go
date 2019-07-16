@@ -30,7 +30,6 @@ func (c *LCConfig) GetConfigContent() (*string, error) {
 	return &result, nil
 }
 
-
 func (c *LCConfig) getGroupContent(name string) (*string, error) {
 	var buffer strings.Builder
 	var err error
@@ -90,8 +89,8 @@ func (c *LCConfig) generateColorCode(name string) string {
 func NewLCConfig(colorDefinitions map[string]string) *LCConfig {
 	config := LCConfig{}
 	config.groups = map[string][]string {}
-	config.extensions = map[string]string {}
-	config.colors = map[string]string {}
+	config.extensions = make(map[string]string, 300)
+	config.colors = make(map[string]string, 300)
 	for k, v := range colorDefinitions {
 		config.colors[k] = DefaultColorType + v
 	}
